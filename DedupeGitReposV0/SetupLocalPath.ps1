@@ -8,6 +8,6 @@ $env:BUILD_REPOSITORY_NAME
 $env:BUILD_REPOSITORY_PROVIDER
 $env:BUILD_REPOSITORY_LOCALPATH
 
-Write-Host "Updating BUILD_REPOSITORY_LOCALPATH"
+Write-Host "Updating PIPELINES_REPOSITORY_PATH"
 
-[Environment]::SetEnvironmentVariable("BUILD_REPOSITORY_LOCALPATH", $foo, "User")
+[Environment]::SetEnvironmentVariable("PIPELINES_REPOSITORY_PATH", "foo", "User")
