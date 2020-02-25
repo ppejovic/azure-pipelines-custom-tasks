@@ -81,8 +81,10 @@ async function run() {
 
             writeConfig(config);
         }
-        var sharedRepoBuildPath: string = tl.resolve(workFolder, repo.path);
-        var sharedRepoFullPath: string = tl.resolve(workFolder, repo.path + "/" + agentDefaultSourceFolderName);
+        var sharedRepoBuildFullPath: string = tl.resolve(workFolder, repo.path);
+		var sharedRepoBuildSourceFolder = repo.path + "/" + agentDefaultSourceFolderName;
+        var sharedRepoBuildSourceFullPath: string = tl.resolve(workFolder, sharedRepoBuildSourceFolder);
+		var 
         var migrate: boolean = false;
 
         if (useSymlink) {
@@ -92,8 +94,8 @@ async function run() {
             tl.debug("sourceFolderIsLink: " + sourceFolderIsLink);
             tl.debug("sourceFolderTarget: " + sourceFolderTarget);
 
-            if (sourceFolderIsLink && sourceFolderTarget == sharedRepoFullPath) {
-                console.log("Build already symlinked to deduped repository at " + sharedRepoFullPath);
+            if (sourceFolderIsLink && sourceFolderTarget == sharedRepoBuildSourceFullPath) {
+                console.log("Build already symlinked to deduped repository at " + sharedRepoBuildSourceFullPath);
             }
             else {
                 migrate = true;
@@ -104,26 +106,26 @@ async function run() {
 
             var sourceFolderMapping = JSON.parse(fs.readFileSync(sourceFolderMappingPath, { encoding: "utf8" }).replace(/^\uFEFF/, ''));
             // Test for shared repo build directory, since sourceFolderMapping.agent_builddirectory is relative to _work.
-            if (sourceFolderMapping.agent_builddirectory == sharedRepoBuildPath) {
+            if (sourceFolderMapping.agent_builddirectory == repo.path) {
                 console.log("SourceFolderMapping for agent_builddirectory already in place");
             }
             else {
-                console.log("Changing SourceFolderMapping to point to " + sharedRepoBuildPath);
+                console.log("Changing SourceFolderMapping for agent_builddirectory to point to " + repo.path);
 
-                sourceFolderMapping.agent_builddirectory = sharedRepoBuildPath;
+                sourceFolderMapping.agent_builddirectory = repo.path;
 
                 tl.writeFile(sourceFolderMappingPath, JSON.stringify(sourceFolderMapping));
 
                 migrate = true;
             }
-            // Test for shared repo source folder path, since sourceFolderMapping.build_sourcesdirectory is relative to _work/agent_builddirectory.
-            if (sourceFolderMapping.build_sourcesdirectory == sharedRepoFullPath) {
+            // Test for shared repo build source folder path, since sourceFolderMapping.build_sourcesdirectory is relative to _work/agent_builddirectory.
+            if (sourceFolderMapping.build_sourcesdirectory == sharedRepoBuildSourceFolder) {
                 console.log("SourceFolderMapping for build_sourcesdirectory already in place");
             }
             else {
-                console.log("Changing SourceFolderMapping to point to " + sharedRepoFullPath);
+                console.log("Changing SourceFolderMapping for build_sourcesdirectory to point to " + sharedRepoBuildSourceFolder);
 
-                sourceFolderMapping.build_sourcesdirectory = sharedRepoFullPath;
+                sourceFolderMapping.build_sourcesdirectory = sharedRepoBuildSourceFolder;
 
                 tl.writeFile(sourceFolderMappingPath, JSON.stringify(sourceFolderMapping));
 
@@ -132,19 +134,19 @@ async function run() {
         }
 
         if (migrate) {
-            console.log("Migrating build to using a deduped repository at " + sharedRepoFullPath);
+            console.log("Migrating build to using a deduped repository at " + sharedRepoBuildSourceFullPath);
 
-            if (!tl.exist(sharedRepoFullPath)) {
+            if (!tl.exist(sharedRepoBuildSourceFullPath)) {
                 if (!tl.exist(sharedGitFolderPath)) {
                     console.log("Creating shared directory " + sharedGitFolderPath + " for repositories");
                     tl.mkdirP(sharedGitFolderPath);
                 }
-                if (!tl.exist(sharedRepoBuildPath)) {
-                    console.log("Creating shared build directory " + sharedRepoBuildPath + " for repo");
-                    tl.mkdirP(sharedRepoBuildPath);
+                if (!tl.exist(sharedRepoBuildFullPath)) {
+                    console.log("Creating shared build directory " + sharedRepoBuildFullPath + " for repo");
+                    tl.mkdirP(sharedRepoBuildFullPath);
                 }
                 console.log("Moving repository to shared directory from " + sourceFolder);
-                tl.mv(sourceFolder, sharedRepoFullPath);
+                tl.mv(sourceFolder, sharedRepoBuildSourceFullPath);
             }
             else {
                 console.log("Repository has already been deduped, removing source folder contents for build at " + sourceFolder);
@@ -157,8 +159,8 @@ async function run() {
             }
 
             if (useSymlink) {
-                console.log("Symlinking source folder at " + sourceFolder + " to deduped repository location at " + sharedRepoFullPath);
-                fs.symlinkSync(sharedRepoFullPath, sourceFolder, "dir");
+                console.log("Symlinking source folder at " + sourceFolder + " to deduped repository location at " + sharedRepoBuildSourceFullPath);
+                fs.symlinkSync(sharedRepoBuildSourceFullPath, sourceFolder, "dir");
             }
         }
 
