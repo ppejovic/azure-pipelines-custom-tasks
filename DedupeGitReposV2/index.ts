@@ -84,7 +84,6 @@ async function run() {
         var sharedRepoBuildFullPath: string = tl.resolve(workFolder, repo.path);
 		var sharedRepoBuildSourceFolder = repo.path + "/" + agentDefaultSourceFolderName;
         var sharedRepoBuildSourceFullPath: string = tl.resolve(workFolder, sharedRepoBuildSourceFolder);
-		var 
         var migrate: boolean = false;
 
         if (useSymlink) {
