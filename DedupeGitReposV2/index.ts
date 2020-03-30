@@ -1,11 +1,11 @@
 import tl = require("azure-pipelines-task-lib/task");
 import fs = require("fs");
 
-var workFolder: string = ""+tl.getVariable("Agent.WorkFolder");
+var workFolder: string = tl.getVariable("Agent.WorkFolder");
 
-var repository: string = ""+tl.getVariable("Build.Repository.Id");
-var repositoryType: string = ""+tl.getVariable("Build.Repository.Provider");
-var sourceFolder: string = ""+tl.getVariable("Build.Repository.LocalPath");
+var repository: string = tl.getVariable("Build.Repository.Id");
+var repositoryType: string = tl.getVariable("Build.Repository.Provider");
+var sourceFolder: string = tl.getVariable("Build.Repository.LocalPath");
 
 var sharedGitFolderName: string = "g";
 var agentDefaultSourceFolderName: string = "s";
