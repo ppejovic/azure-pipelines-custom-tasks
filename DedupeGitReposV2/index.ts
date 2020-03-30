@@ -100,6 +100,7 @@ async function run() {
             var sourceFolderMappingPath: string = tl.resolve(workFolder, "SourceRootMapping", tl.getVariable("System.CollectionId"), tl.getVariable("System.DefinitionId"), "SourceFolder.json");
 
             var sourceFolderMapping = JSON.parse(fs.readFileSync(sourceFolderMappingPath, { encoding: "utf8" }).replace(/^\uFEFF/, ''));
+
             // Test for shared repo build directory, since sourceFolderMapping.agent_builddirectory is relative to _work.
             if (sourceFolderMapping.agent_builddirectory == repo.path) {
                 console.log("SourceFolderMapping for agent_builddirectory already in place");
@@ -113,6 +114,7 @@ async function run() {
 
                 migrate = true;
             }
+
             // Test for shared repo build source folder path, since sourceFolderMapping.build_sourcesdirectory is relative to _work/agent_builddirectory.
             if (sourceFolderMapping.build_sourcesdirectory == sharedRepoBuildSourceFolder) {
                 console.log("SourceFolderMapping for build_sourcesdirectory already in place");
@@ -136,15 +138,18 @@ async function run() {
                     console.log("Creating shared directory " + sharedGitFolderPath + " for repositories");
                     tl.mkdirP(sharedGitFolderPath);
                 }
+
                 if (!tl.exist(sharedRepoBuildFullPath)) {
                     console.log("Creating shared build directory " + sharedRepoBuildFullPath + " for repo");
                     tl.mkdirP(sharedRepoBuildFullPath);
                 }
+
                 console.log("Moving repository to shared directory from " + sourceFolder);
                 tl.mv(sourceFolder, sharedRepoBuildSourceFullPath);
             }
             else {
                 console.log("Repository has already been deduped, removing source folder contents for build at " + sourceFolder);
+
                 try {
                     tl.rmRF(sourceFolder);
                 }
