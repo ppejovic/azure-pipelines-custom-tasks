@@ -11,17 +11,13 @@ var sharedGitFolderName: string = "g";
 var agentDefaultSourceFolderName: string = "s";
 var sharedGitFolderPath: string = tl.resolve(workFolder, sharedGitFolderName);
 var configFileName: string = "DedupeGitReposConfig.json";
-var configFilePath: string = tl.resolve(sharedGitFolderPath, configFileName);
+var configFilePath: string = tl.resolve(workFolder, configFileName);
 var gitProviders = ["TfsGit", "Git", "GitHub"];
 
 var useSymlink: boolean = false;
 
 function writeConfig(config: any) {
     console.log("Writing configuration to " + configFilePath);
-
-    if (!tl.exist(sharedGitFolderPath)) {
-        tl.mkdirP(sharedGitFolderPath);
-    }
 
     tl.writeFile(configFilePath, JSON.stringify(config));
 }
@@ -33,16 +29,6 @@ async function run() {
         tl.debug("sourceFolder: " + sourceFolder);
         tl.debug("sharedGitFolderPath: " + sharedGitFolderPath);
         tl.debug("configFilePath: " + configFilePath);
-
-        if (sourceFolder.indexOf(sharedGitFolderPath) == 0) {
-            console.log(sourceFolder + " is already using deduplicated repo at " + sourceFolder);
-            return;
-        }
-
-        if (gitProviders.indexOf(repositoryType) == -1) {
-            tl.setResult(tl.TaskResult.Failed, "Unsupported repository type " + repositoryType + "; must be one of " + gitProviders.join(","));
-            return;
-        }
 
         var config;
 
@@ -63,6 +49,16 @@ async function run() {
         }
         else {
             config = JSON.parse(fs.readFileSync(configFilePath, { encoding: "utf8" }).replace(/^\uFEFF/, ''));
+        }
+
+        if (sourceFolder.indexOf(sharedGitFolderPath) == 0) {
+            console.log(sourceFolder + " is already using deduplicated repo at " + sourceFolder);
+            return;
+        }
+
+        if (gitProviders.indexOf(repositoryType) == -1) {
+            tl.setResult(tl.TaskResult.Failed, "Unsupported repository type " + repositoryType + "; must be one of " + gitProviders.join(","));
+            return;
         }
 
         var repo = config.repos.find((r: any) => r.repository == repository);
