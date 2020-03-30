@@ -77,6 +77,7 @@ async function run() {
 
             writeConfig(config);
         }
+
         var sharedRepoBuildFullPath: string = tl.resolve(workFolder, repo.path);
 		var sharedRepoBuildSourceFolder = repo.path + "/" + agentDefaultSourceFolderName;
         var sharedRepoBuildSourceFullPath: string = tl.resolve(workFolder, sharedRepoBuildSourceFolder);
@@ -134,17 +135,13 @@ async function run() {
             console.log("Migrating build to using a deduped repository at " + sharedRepoBuildSourceFullPath);
 
             if (!tl.exist(sharedRepoBuildSourceFullPath)) {
-                if (!tl.exist(sharedGitFolderPath)) {
-                    console.log("Creating shared directory " + sharedGitFolderPath + " for repositories");
-                    tl.mkdirP(sharedGitFolderPath);
-                }
-
                 if (!tl.exist(sharedRepoBuildFullPath)) {
                     console.log("Creating shared build directory " + sharedRepoBuildFullPath + " for repo");
                     tl.mkdirP(sharedRepoBuildFullPath);
                 }
 
                 console.log("Moving repository to shared directory from " + sourceFolder);
+
                 tl.mv(sourceFolder, sharedRepoBuildSourceFullPath);
             }
             else {
