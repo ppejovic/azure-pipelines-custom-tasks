@@ -1,1 +1,5 @@
-node_modules
+node_modules/
+
+DedupeGitReposV*/**/*.js
+[Tt]ests/**/*.js
+.taskkey
