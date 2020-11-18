@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as assert from 'assert';
 import * as ttm from 'azure-pipelines-task-lib/mock-test';
 
-describe('Sample task test', function () {
+describe('DedupeGitReposV2 Suite', function () {
     
     before( function() {
 
@@ -18,7 +18,8 @@ describe('Sample task test', function () {
         let tp = path.join(__dirname, 'L0FirstClone.js');
         let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
         tr.run();
-        assert.strictEqual(tr.stdout.indexOf('Hello human') >= 0, true, 'should display Hello human');
+        console.log(tr.stdout);
+        assert.strictEqual(tr.stdout.indexOf('verzion') >= 0, true, 'should display version');
         done();
     });
 
