@@ -17,7 +17,7 @@
   "instanceNameFormat": "Dedupe Git Repositories",
   "execution": {
     "Node10": {
-      "target": "index.js"
+      "target": "dedupe.js"
     }
   }
 }
